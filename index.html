@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="de">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+	<title>Immobilienrechner</title>
+	<link rel="icon" type="image/x-icon" href="inc/favicon.ico">
+	<script src="https://unpkg.com/vue@3"></script>
+	<!--<script src="inc/vue3.5.12.global.js"></script>-->
+	<link rel="stylesheet" href="inc/style.css">
+</head>
+<body>
+
+<div id="content">
+<h1>Rendite- und Laufzeitrechner für Immobilien</h1>
+
+
+<div class="box">
+<h2>Basisangaben</h2>
+
+<table>
+<tr>
+	<td class="descr"><label for="kaufpreis">Kaufpreis</label></td>
+	<td class="val"><input id="kaufpreis" type="tel" v-model="preis" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>000 €</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="qm">Wohnfläche</label></td>
+	<td class="val"><input id="qm" type="tel" v-model="qm" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>m²</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="km">Kaltmiete</label></td>
+	<td class="val"><input id="km" type="tel" v-model="km" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="ha">Hausgeld</label></td>
+	<td class="val"><input id="ha" type="tel" v-model="ha" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="nu">&nbsp;&nbsp; nicht-umlegbarer Anteil</label></td>
+	<td class="val"><input id="nu" type="tel" v-model="nu" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="ep">Erbpacht</label></td>
+	<td class="val"><input id="ep" type="tel" v-model="ep" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td><p>&nbsp;</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Kaufpreis je Quadratmeter</p></td>
+	<td class="val out"><p>{{ tausenderpunkte(kaufpreis_m2) }}</p></td>
+	<td class="unit"><p>€ / m²</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Kaltmiete je Quadratmeter</p></td>
+	<td class="val out"><p>{{ kaltmiete_m2.toFixed(2) }}</p></td>
+	<td class="unit"><p>€ / m²</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Warmmiete</p></td>
+	<td class="val"><p>{{ tausenderpunkte(warmmiete) }}</p></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Nettokaltmiete</p></td>
+	<td class="val out"><p>{{ tausenderpunkte(nettokaltmiete) }}</p></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>&nbsp;</p></td>
+	<td class="val out"><p>{{ tausenderpunkte(nettokaltmietejahr) }}</p></td>
+	<td class="unit"><p>€ / Jahr</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Bruttorendite</p></td>
+	<td class="val out"><p>{{ kommatrenner(bruttorendite.toFixed(2)) }}</p></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Nettorendite</p></td>
+	<td class="val out"><p>{{ kommatrenner(nettorendite.toFixed(2)) }}</p></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+</table>
+
+
+<h2>Kaufnebenkosten</h2>
+
+<table>
+<tr>
+	<td class="descr"><label for="nkg">Grunderwerbssteuer</label></td>
+	<td class="val"><input id="nkg" type="tel" v-model="nkg" v-on:keypress="isFloat($event)" /></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="nkn">Notar &amp; Grundbucheintrag</label></td>
+	<td class="val"><input id="nkn" type="tel" v-model="nkn" v-on:keypress="isFloat($event)" /></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="nkm">Maklerprovision</label></td>
+	<td class="val"><input id="nkm" type="tel" v-model="nkm" v-on:keypress="isFloat($event)" /></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="nks">Sonstiges</label></td>
+	<td class="val"><input id="nks" type="tel" v-model="nks" v-on:keypress="isFloat($event)" /></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td><p>&nbsp;</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Summe Kaufnebenkosten</p></td>
+	<td class="val out"><p>{{ kommatrenner(summekaufnkrel) }}</p></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>&nbsp;</p></td>
+	<td class="val out"><p>{{ tausenderpunkte(summekaufnk) }}</p></td>
+	<td class="unit"><p>€</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Kosten gesamt</p></td>
+	<td class="val out"><p>{{ tausenderpunkte(kostengesamt) }}</p></td>
+	<td class="unit"><p>€</p></td>
+</tr>
+</table>
+</div>
+
+<div class="box">
+<h2>Finanzierung (Annuitätendarlehen)</h2>
+
+<table>
+<tr>
+	<td class="descr"><label for="baz">Sollzins</label></td>
+	<td class="val"><input id="baz" type="tel" v-model="baz" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="baza"></label></td>
+	<td colspan="2" class="val"><input id="baza" type="range" v-model="baz" min="0.5" max="8.0" step=".1" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"></td>
+</tr>
+<tr>
+	<td class="descr"><label for="ts">Anfänglicher Tilgungssatz</label></td>
+	<td class="val"><input id="ts" type="tel" v-model="ts" v-on:keypress="isFloat($event)" /></td> <!-- number step=".5" -->
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="tsa"></label></td>
+	<td colspan="2" class="val"><input id="tsa" type="range" v-model="ts" min="1.0" max="5.0" step=".1" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"></td>
+</tr>
+<tr>
+	<td class="descr"><label for="st">Sondertilgung</label></td>
+	<td class="val"><input id="st" type="tel" v-model="st" v-on:keypress="isFloat($event)" /></td> <!-- number step=".5" -->
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="sta"></label></td>
+	<td colspan="2" class="val"><input id="sta" type="range" v-model="st" min="0.0" max="10.0" step=".5" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"></td>
+</tr>
+<tr>
+	<td class="descr"><label for="lzt">Zinsbindung</label></td>
+	<td class="val"><input id="lzt" type="tel" v-model="lzt" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>Jahre</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="lzta"></label></td>
+	<td colspan="2" class="val"><input id="lzta" type="range" v-model="lzt" min="5" max="30" step="5" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"></td>
+</tr>
+<tr>
+	<td class="descr"><label for="ek">Eigenkapital</label></td>
+	<td class="val"><input id="ek" type="tel" v-model="ek" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"><p>000 €</p></td>
+</tr>
+<tr>
+	<td class="descr"><label for="eka"></label></td>
+	<td colspan="2" class="val"><input id="eka" type="range" v-model="ek" min="0" :max="kostengesamtrund * 0.8" v-on:keypress="isInt($event)" /></td>
+	<td class="unit"></td>
+</tr>
+<tr>
+	<td><p>&nbsp;</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Eigenkapitalanteil</p></td>
+	<td class="val out"><p>{{ Math.round(ekanteil) }}</p></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Fremdkapital</p></td>
+	<td class="val out"><p>{{ Math.round(fremdkapital / 1000) }}</p></td>
+	<td class="unit"><p>000 €</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Sondertilgung</p></td>
+	<td class="val out"><p>{{ tausenderpunkte(sondertilgung) }}</p></td>
+	<td class="unit"><p>€ / Jahr</p></td>
+</tr>
+</table>
+
+
+<h2>Laufzeit &amp; Restschuld</h2>
+
+<table>
+<tr>
+	<td class="descr"><p>Anfängliche Zinszahlung</p></td>
+	<td class="val out"><p>{{ Math.round(zinszahlungbeginn) }}</p></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Anfängliche Tilgung</p></td>
+	<td class="val out"><p>{{ Math.round(tilgungbeginn) }}</p></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Monatsrate (Annuität)</p></td>
+	<td class="val out"><p>{{ Math.round(annuitaet) }}</p></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td class="descr"></td>
+	<td class="val out"><p>{{ kommatrenner((parseFloat(baz) + parseFloat(ts)).toFixed(1)) }}</p></td>
+	<td class="unit"><p>%</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Differenz zur Nettokaltmiete</p></td>
+	<td class="val"><p>{{ Math.round(diffzunetto) }}</p></td>
+	<td class="unit"><p>€ / Monat</p></td>
+</tr>
+<tr>
+	<td><p>&nbsp;</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Theoretische Gesamtlaufzeit</p></td>
+	<td class="val out"><p>{{ kommatrenner((laufzeit / 12).toFixed(1)) }}</p></td>
+	<td class="unit"><p>Jahre</p></td>
+</tr>
+<tr>
+	<td class="descr"><p>Restschulden nach Zinsbindung</p></td>
+	<td class="val out"><p>{{ tausenderpunkte(rest) }}</p></td>
+	<td class="unit"><p>€ ({{ Math.round(100 / fremdkapital * rest) }} %)</p></td>
+</tr>
+</table>
+</div>
+
+<div class="clear"></div>
+
+<div id="butwrap">
+	<button class="buttons" @click="store">store</button>
+	<button class="buttons" @click="reset">reset</button>
+</div>
+
+<div id="graphbar">
+	<div class="gitem" v-for="(item, i) in zrarr">
+		<p class="jahr">{{ i+1 }}</p>
+		<p class="gzins" :style="{ 'height': item + '%' }">&nbsp;</p>
+		<p class="gtilg" :class="
+			{ in: ((i < lzt) ? true : false) }
+			" v-bind:style="
+			{ 'height': (100 - item) + '%' }
+			">{{ '&nbsp;' + (100 - item) + '&nbsp;%' }}</p>
+	</div>
+
+</div>
+
+<div style="clear: both"></div>
+</div> <!-- #content -->
+
+<p id="info">Gesamtlaufzeit und Tilgungsanteil je Jahr</p>
+
+<script>
+
+const app = Vue.createApp({
+	data() {
+		return {
+			preis: '200',	// Kaufpreis			1/1000 €
+			qm: '75',	// Quadratmeter			m²
+			km: '800',	// Kaltmiete			€/Monat
+			ha: '250',	// Hausgeld			€/Monat
+			nu: '100',	// nicht-umlegbarer Anteil	€/Monat
+			ep: '0',	// ggf. Erbpacht		€/Monat
+			nkg: '5',	// Grunderwerbssteuer		%
+			nkn: '2.5',	// Notar und Grundbucheintrag	%
+			nkm: '3.57',	// ggf. Maklerprovision		%
+			nks: '0',	// Sontige Nebenkosten		%
+			baz: '3.0',	// Bauzins			%
+			ts: '3.0',	// Tilgunssatz			%
+			st: '0.0',	// Sondertilgung		%
+			ek: '50',	// Eigenkapital			1/1000 €
+			lzt: '10',	// Zinsbindung/Laufzeit		Jahre
+			rest: '',	// Restschuld nach Zinsbindung	€
+			zarr: [],	// Array Zinswerte
+			zrarr: [],	// Array Zinswerte relativ
+			tarr: [],	// Array Tilgunswerte
+			trarr: [],	// Array Tilgunswerte relativ
+			sarr: [],	// Array Restschuld
+			srarr: []	// Array Restschuld relativ
+		}
+  	},
+	mounted() {
+		if (localStorage.preis) this.preis = localStorage.preis;
+		if (localStorage.qm) this.qm = localStorage.qm;
+		if (localStorage.km) this.km = localStorage.km;
+		if (localStorage.ha) this.ha = localStorage.ha;
+		if (localStorage.nu) this.nu = localStorage.nu;
+		if (localStorage.ep) this.ep = localStorage.ep;
+		if (localStorage.nkg) this.nkg = localStorage.nkg;
+		if (localStorage.nkn) this.nkn = localStorage.nkn;
+		if (localStorage.nkm) this.nkm = localStorage.nkm;
+		if (localStorage.nks) this.nks = localStorage.nks;
+		if (localStorage.baz) this.baz = localStorage.baz;
+		if (localStorage.ts) this.ts = localStorage.ts;
+		if (localStorage.st) this.st = localStorage.st;
+		if (localStorage.ek) this.ek = localStorage.ek;
+		if (localStorage.lzt) this.lzt = localStorage.lzt;
+	},
+	methods: {
+		isInt: function(evt) {
+			evt = (evt) ? evt : window.event;
+			var charCode = (evt.which) ? evt.which : evt.keyCode;
+
+			if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+				evt.preventDefault();
+			} else {
+				return true;
+			}
+		},
+		isFloat: function(evt) {
+			evt = (evt) ? evt : window.event;
+			var charCode = (evt.which) ? evt.which : evt.keyCode;
+
+			if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46) {
+				evt.preventDefault();
+			} else {
+				return true;
+			}
+		},
+		kommatrenner: function(wert) {
+			return wert.toString().replace(".", ",");
+		},
+		tausenderpunkte: function(zahl = 0) {
+			if(isNaN(zahl)) return "NaN";
+			zahl = Math.round(zahl);
+
+			var temp = String(zahl);
+			var ausgabeZahl = "";
+			var tz = ".";
+
+			var anzahl = temp.length;
+			var c = 0;
+
+			if(anzahl => 4) {
+				while(anzahl > c) {
+					c++;
+					var position = temp.length - c;
+					ausgabeZahl = temp[position] + ausgabeZahl;
+					if(position == 0) { break; }
+					if(c % 3 == 0) { ausgabeZahl = tz + ausgabeZahl; }
+				}
+			}
+			return ausgabeZahl;
+		},
+		store: function() {
+			localStorage.preis = this.preis;
+			localStorage.qm = this.qm;
+			localStorage.km = this.km;
+			localStorage.ha = this.ha;
+			localStorage.nu = this.nu;
+			localStorage.ep = this.ep;
+			localStorage.nkg = this.nkg;
+			localStorage.nkn = this.nkn;
+			localStorage.nkm = this.nkm;
+			localStorage.nks = this.nks;
+			localStorage.baz = this.baz;
+			localStorage.ts = this.ts;
+			localStorage.st = this.st;
+			localStorage.ek = this.ek;
+			localStorage.lzt = this.lzt;
+		},
+		reset: function() {
+			localStorage.removeItem("preis");
+			localStorage.removeItem("qm");
+			localStorage.removeItem("km");
+			localStorage.removeItem("ha");
+			localStorage.removeItem("nu");
+			localStorage.removeItem("ep");
+			localStorage.removeItem("nkg");
+			localStorage.removeItem("nkn");
+			localStorage.removeItem("nkm");
+			localStorage.removeItem("nks");
+			localStorage.removeItem("baz");
+			localStorage.removeItem("ts");
+			localStorage.removeItem("st");
+			localStorage.removeItem("ek");
+			localStorage.removeItem("lzt");
+			window.location.reload();
+		}
+	},
+	computed: {
+		kaufpreis_m2() {
+			return this.preis * 1000 / this.qm;
+		},
+		kaltmiete_m2() {
+			return this.km / this.qm;
+		},
+		warmmiete() {
+			return parseInt(this.km) + parseInt(this.ha) - parseInt(this.nu);
+		},
+		nettokaltmiete() {
+			return this.km - this.nu - this.ep;
+		},
+		nettokaltmietejahr() {
+			return this.nettokaltmiete *12;
+		},
+		bruttorendite() {
+			return 100 / ((this.preis * 1000) / this.nettokaltmietejahr);
+		},
+		nettorendite() {
+			return 100 / ((this.preis * 1000 + this.summekaufnk) / this.nettokaltmietejahr);
+		},
+		summekaufnkrel() {
+			return parseFloat(this.nkg) + parseFloat(this.nkn) + parseFloat(this.nkm) + parseFloat(this.nks);
+		},
+		summekaufnk() {
+			return parseInt(this.preis) * 10 * this.summekaufnkrel;
+		},
+		kostengesamt() {
+			return parseInt(this.preis) * 1000 + parseInt(this.summekaufnk);
+		},
+		kostengesamtrund() {
+			return Math.round(this.kostengesamt / 1000);
+		},
+		ekanteil() {
+			return 100 / this.preis * this.ek;
+		},
+		fremdkapital() {
+			return this.kostengesamt - (this.ek * 1000);
+		},
+		zinszahlungbeginn() {
+			return (this.fremdkapital * this.baz / 100) / 12;
+		},
+		tilgungbeginn() {
+			return (this.fremdkapital * this.ts / 100) / 12;
+		},
+		annuitaet() {
+			return this.zinszahlungbeginn + this.tilgungbeginn;
+		},
+		diffzunetto() {
+			return  this.annuitaet - this.nettokaltmiete;
+		},
+		sondertilgung() {
+			return this.fremdkapital * this.st / 100;
+		},
+		laufzeit() {
+			var monate = 0, zins = 0, tilg = 0, zsum = 0;
+			var schulden = this.fremdkapital;
+			var unset = true;
+			this.zarr = [];
+			this.zrarr = [];
+			this.tarr = [];
+			this.trarr = [];
+			this.sarr = [];
+			this.srarr = [];
+
+			while(schulden > 0) {
+				monate += 1;
+				zins = (schulden * this.baz / 100) / 12;
+				tilg = this.annuitaet - zins;
+				zsum += zins;
+				schulden -= tilg;
+
+				if(monate % 12 == 1) {
+					// alle 12 Monate Sondertigung
+					schulden -= this.sondertilgung;
+					
+					// jährliche Daten sammeln für Diagramm
+					this.sarr.push(Math.round(schulden));
+					this.srarr.push(Math.round(100 / this.fremdkapital * schulden));
+					this.zarr.push(Math.round(zins));
+					this.zrarr.push(Math.round(100 / this.annuitaet * zins));
+					this.tarr.push(Math.round(tilg + this.sondertilgung));
+					this.trarr.push(Math.round(100 / this.annuitaet * (tilg + this.sondertilgung)));
+				}
+
+				if(unset && monate >= (this.lzt * 12)) {
+					this.rest = (schulden > 0) ? schulden : 0;
+					unset = false;
+				} else if((this.lzt * 12) > monate) {
+					this.rest = 0;
+				}
+			}
+			return monate;
+		}
+	}
+})
+
+app.mount('#content');
+
+</script>
+
+</body>
+</html>

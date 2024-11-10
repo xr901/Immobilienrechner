@@ -1,0 +1,169 @@
+* { padding: 0; margin: 0 }
+html {
+	background-image: linear-gradient(to top, #222 0%, #333 5%);
+
+}
+
+html, body {
+	/*background: #333;*/
+	color: #94a3b8;
+	font-family: sans-serif;
+	--hell: #38bdf8;
+	--hell2: #078cc5;
+	--dunkel: #0f172a;
+	--med: #94a3b8;
+}
+
+#content {
+	width: 80%;
+	min-width: 620px;
+	max-width: 1400px;
+	margin: 1.5% auto 30px;
+	padding: 0 30px 0;
+	/*box-shadow: 0 0 5px rgb(56 189 248) inset;*/
+	border: 1px solid var(--hell);
+	border-radius: 16px;
+	background: var(--dunkel);
+}
+
+.box {
+	float: left;
+	margin: 0 5% 0;
+}
+
+.clear { clear: both; }
+
+pre { color: #666; }
+
+h1 {
+	/*font-size: 170%;
+	font-family: serif;*/
+	margin-top: 40px;
+	font-weight: 100;
+	color: var(--hell);
+	text-align: center;
+	text-shadow: 1px 1px 3px #000;
+}
+
+@media only screen and (min-width: 1700px) {
+	h1 {
+		writing-mode: vertical-lr;
+	        text-orientation: mixed;
+		float: left;
+		margin-right: 2%;
+	}
+}
+
+h2 {
+	font-size: 110%;
+	margin: 40px 0 18px;
+	color: #fff;
+	text-align: left;
+}
+
+tr {
+	height: 28px;
+	padding: 2px 4px;
+}
+
+td { padding-right: 8px; }
+
+td.descr { min-width: 300px; }
+
+td.val {
+	text-align: right;
+	width: 6em; 
+}
+
+input {
+	width: 6em; 
+	text-align: right;
+	background: transparent;
+	color: var(--med);
+	border: none;
+	border-bottom: 1px solid var(--hell);
+	font-size: 100%;
+	font-weight: bold;
+}
+
+input[type="range"] { float: left; }
+
+td[colspan="2"] input { width: 11em; }
+
+td.val > input { padding: 0 2px; }
+
+.out { color: #fff; }
+
+hr { border-top: 1px solid var(--hell); }
+
+#butwrap {
+	position: fixed;
+	top: 20%;
+	right: 0;
+	width: 65px;
+}
+
+.buttons {
+	float: right;
+	width: 64px;
+	height: 34px;
+	text-transform: uppercase;
+	margin: 0 6px 6px;
+	box-shadow: 0 0 5px #000;
+	font-size: 16px;
+}
+
+#graphbar {
+	position: relative;
+	display: flex;
+	flex-wrap: nowrap;
+	width: 100%;
+	margin: 40px 0 0;
+}
+.gitem {
+	/*display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(2px, 600px));
+	gap: 4px;*/
+	/*float: left;*/
+	width: 500px;
+	margin: 0 5px 0 12px;
+	height: 200px;
+	border-left: 1px solid var(--hell);
+}
+.gitem .gzins,
+.gitem .gtilg,
+.gitem .schuld {
+	writing-mode: vertical-lr;
+	text-orientation: mixed;
+	padding: 0px 1px 0;
+	/*overflow: hidden;*/
+	/*background-image: linear-gradient(to right, var(--hell) 0%, var(--dunkel) 40%);*/
+}
+.gitem .jahr {
+	position: absolute;
+	bottom: -24px;
+	color: var(--dunkel);
+	color: var(--med);
+}
+.gtilg {
+	/*background: var(--dunkel);*/
+	background-image: linear-gradient(to top, var(--med) 0%, var(--dunkel) 80%);
+	border-top: 1px solid var(--hell);
+}
+.gtilg.in {
+	background-image: linear-gradient(to top, var(--hell) 0%, var(--dunkel) 80%);
+}
+.gitem:hover .jahr { color: #fff; }
+.gitem:hover .gtilg { color: #fff; }
+.gitem:hover .gzins { background: var(--med); }
+
+#info {
+	width: max-content;
+	font-size: 100%;
+	text-align: center;
+	margin: 34px auto 100px;
+	padding: 3px 12px 4px;
+	color: var(--med);
+}
+
+	
